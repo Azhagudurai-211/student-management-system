@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AD Full Stack Student Management System</title>
+<script src="./config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{--bg1:#081121;--bg2:#111c34;--bg3:#1c2d50;--text:#eef4ff;--muted:#c8d5f0;--line:rgba(255,255,255,.12);--glass:rgba(255,255,255,.08);--glass2:rgba(255,255,255,.12);--blue:#4f8cff;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--purple:#8b5cf6}
+body.light{--bg1:#dbeafe;--bg2:#eef5ff;--bg3:#ffffff;--text:#0f172a;--muted:#475569;--line:rgba(15,23,42,.10);--glass:rgba(255,255,255,.72);--glass2:rgba(255,255,255,.92)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial,sans-serif} body{min-height:100vh;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);overflow-x:hidden} button,input,select,textarea{font:inherit}
+.hidden{display:none!important}.glass{background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--line);box-shadow:0 18px 45px rgba(0,0,0,.25);border-radius:26px}.bg-orb{position:fixed;border-radius:50%;filter:blur(100px);opacity:.35;z-index:0;animation:float 8s ease-in-out infinite}.orb1{width:240px;height:240px;background:#3b82f6;top:2%;left:3%}.orb2{width:280px;height:280px;background:#8b5cf6;bottom:8%;right:4%;animation-delay:-2s}.orb3{width:190px;height:190px;background:#06b6d4;top:40%;right:18%;animation-delay:-4s}
+.auth-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;z-index:1}.auth-card{width:min(470px,100%);padding:30px}.logo{font-size:30px;font-weight:900;letter-spacing:.3px;margin-bottom:8px}.sub{color:var(--muted);line-height:1.6;margin-bottom:18px}.input,.select,.textarea{width:100%;padding:13px 14px;border-radius:16px;border:1px solid var(--line);background:var(--glass2);color:var(--text);outline:none}.textarea{min-height:88px;resize:vertical}.stack{display:grid;gap:12px}.row{display:flex;gap:12px;flex-wrap:wrap}.btn{border:none;border-radius:16px;padding:13px 16px;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(135deg,#2563eb,#4f46e5);box-shadow:0 10px 25px rgba(37,99,235,.28);transition:.22s}.btn:hover{transform:translateY(-2px)}.btn.secondary{background:#475569;box-shadow:none}.btn.green{background:#16a34a}.btn.red{background:#dc2626}.btn.amber{background:#d97706}.btn.purple{background:#7c3aed}.btn.teal{background:#0f766e}.btn.small{padding:8px 12px;border-radius:12px;font-size:13px}
+.dashboard{display:grid;grid-template-columns:290px 1fr;gap:18px;padding:18px;position:relative;z-index:1;min-height:100vh}.sidebar{padding:24px;display:flex;flex-direction:column;gap:16px}.brand{font-size:24px;font-weight:900;color:#9fc5ff}.side-note{color:var(--muted);font-size:14px;line-height:1.6}.nav button{width:100%;text-align:left;background:rgba(255,255,255,.05);border:1px solid transparent;color:var(--text);padding:14px 16px;border-radius:16px;cursor:pointer;font-weight:700;margin-bottom:10px;transition:.2s}.nav button:hover,.nav button.active{transform:translateX(5px);background:rgba(79,140,255,.22);border-color:var(--line)}.main{display:grid;gap:18px}.topbar{padding:22px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}.topbar h1{font-size:32px}.badge{display:inline-flex;gap:10px;align-items:center;background:rgba(79,140,255,.18);padding:10px 14px;border-radius:999px;color:#cfe0ff;font-weight:700}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}.card{padding:18px}.stat-title{color:var(--muted);font-size:14px;margin-bottom:10px}.stat-value{font-size:30px;font-weight:900}.sections{display:grid;gap:18px}.panel{padding:20px}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.section-head h2{font-size:22px}.helper{color:var(--muted);font-size:13px;line-height:1.5}.filter-grid{display:grid;grid-template-columns:1.2fr repeat(6,.8fr);gap:12px;margin-bottom:16px}.form-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}.toolbar{display:grid;grid-template-columns:1.2fr repeat(6,auto);gap:12px;margin-bottom:16px}.table-wrap{overflow:auto;border-radius:20px}table{width:100%;border-collapse:collapse;min-width:1350px}th,td{padding:14px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{color:#9fc5ff;font-size:14px}body.light th{color:#1d4ed8}.avatar{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;overflow:hidden;font-weight:900}.avatar img{width:100%;height:100%;object-fit:cover}.status{padding:7px 11px;border-radius:999px;font-size:12px;font-weight:800;display:inline-flex}.s-active{background:rgba(34,197,94,.22)}.s-pending{background:rgba(245,158,11,.24)}.s-inactive{background:rgba(239,68,68,.24)}.grid-2{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.chart-card{padding:18px;min-height:340px}.chart-wrap{position:relative;height:260px}.quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.quick-item{padding:14px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)}.mini-list{display:grid;gap:10px}.mini-item{padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line)}.modal-cover{position:fixed;inset:0;background:rgba(2,6,23,.6);display:flex;justify-content:center;align-items:center;padding:20px;z-index:30}.modal{width:min(900px,100%);padding:22px;max-height:90vh;overflow:auto}.profile-head{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:18px}.profile-avatar{width:96px;height:96px;border-radius:26px;overflow:hidden;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900}.profile-avatar img{width:100%;height:100%;object-fit:cover}.profile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}.profile-box{padding:14px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)}.profile-box h4{font-size:13px;color:var(--muted);margin-bottom:7px}.empty{padding:18px;border:1px dashed var(--line);border-radius:18px;color:var(--muted)}.toast{position:fixed;right:18px;bottom:18px;z-index:60;background:#0f172a;color:#fff;padding:12px 16px;border-radius:14px;box-shadow:0 16px 30px rgba(0,0,0,.25)} @keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.08)}} @media (max-width:1280px){.dashboard{grid-template-columns:1fr}.filter-grid,.form-grid,.toolbar,.chart-grid,.grid-2,.quick-grid,.profile-grid{grid-template-columns:1fr}.sidebar{order:2}.main{order:1}}
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div><div class="bg-orb orb2"></div><div class="bg-orb orb3"></div>
+<div id="toast" class="toast hidden"></div>
+<section id="authSection" class="auth-shell">
+  <div class="auth-card glass">
+    <div id="loginBox">
+      <div class="logo">🎓 AD Full Stack SMS</div>
+      <p class="sub">Now this version uses a real backend with SQLite database. Your student records are stored in <strong>database.sqlite</strong>.</p>
+      <div class="stack">
+        <input class="input" id="loginEmail" type="email" placeholder="Admin email" />
+        <input class="input" id="loginPassword" type="password" placeholder="Admin password" />
+        <button class="btn" onclick="loginUser()">Login as Admin</button>
+        <button class="btn secondary" onclick="showSignup()">Create Admin Account</button>
+      </div>
+    </div>
+    <div id="signupBox" class="hidden">
+      <div class="logo">✨ Create Admin Account</div>
+      <p class="sub">Create one admin account to use the full system.</p>
+      <div class="stack">
+        <input class="input" id="signupName" type="text" placeholder="Admin full name" />
+        <input class="input" id="signupEmail" type="email" placeholder="Admin email" />
+        <input class="input" id="signupPassword" type="password" placeholder="Admin password" />
+        <button class="btn" onclick="signupUser()">Save Admin Account</button>
+        <button class="btn secondary" onclick="showLogin()">Back to Login</button>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="dashboardSection" class="dashboard hidden">
+  <aside class="sidebar glass">
+    <div><div class="brand">🎓 AD Student System</div><p class="side-note">Full stack dashboard with backend, database, charts, and student management.</p></div>
+    <div class="nav">
+      <button class="active">🏠 Dashboard</button>
+      <button onclick="scrollToSection('studentSection')">👨‍🎓 Students</button>
+      <button onclick="scrollToSection('analyticsSection')">📊 Analytics</button>
+      <button onclick="scrollToSection('financeSection')">💰 Fees</button>
+      <button onclick="scrollToSection('infoSection')">🗄 Database Info</button>
+      <button onclick="openStudentModal()">➕ Add Student</button>
+      <button onclick="toggleTheme()">🌙 / ☀ Theme</button>
+      <button onclick="logoutUser()">🚪 Logout</button>
+    </div>
+    <div class="mini-list">
+      <div class="mini-item">🗄 SQLite database</div>
+      <div class="mini-item">🖼 Student photo upload</div>
+      <div class="mini-item">📄 PDF export</div>
+      <div class="mini-item">📊 Search + filter + charts</div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar glass">
+      <div>
+        <div class="badge" id="welcomeText">Welcome back</div>
+        <h1>Full Stack Student Management Dashboard</h1>
+        <div class="helper">Express + SQLite backend with premium frontend UI.</div>
+      </div>
+      <div class="row"><button class="btn purple" onclick="openStudentModal()">Add Student</button><button class="btn teal" onclick="exportCurrentPdf()">Export PDF</button><button class="btn red" onclick="logoutUser()">Logout</button></div>
+    </div>
+    <section class="cards">
+      <div class="card glass"><div class="stat-title">Total Students</div><div class="stat-value" id="statTotal">0</div></div>
+      <div class="card glass"><div class="stat-title">Average Marks</div><div class="stat-value" id="statAvgMarks">0</div></div>
+      <div class="card glass"><div class="stat-title">Present Today</div><div class="stat-value" id="statAttendance">0%</div></div>
+      <div class="card glass"><div class="stat-title">Fees Collected</div><div class="stat-value" id="statFees">₹0</div></div>
+      <div class="card glass"><div class="stat-title">Pending Fees</div><div class="stat-value" id="statPendingFees">₹0</div></div>
+      <div class="card glass"><div class="stat-title">Pass Rate</div><div class="stat-value" id="statPassRate">0%</div></div>
+    </section>
+    <div class="sections">
+      <section id="analyticsSection" class="panel glass">
+        <div class="section-head"><div><h2>Analytics Overview</h2><div class="helper">Live charts update from database data.</div></div></div>
+        <div class="chart-grid">
+          <div class="chart-card glass"><div class="section-head"><h3>Department Distribution</h3></div><div class="chart-wrap"><canvas id="deptChart"></canvas></div></div>
+          <div class="chart-card glass"><div class="section-head"><h3>Marks Performance</h3></div><div class="chart-wrap"><canvas id="marksChart"></canvas></div></div>
+          <div class="chart-card glass"><div class="section-head"><h3>Attendance Rate</h3></div><div class="chart-wrap"><canvas id="attendanceChart"></canvas></div></div>
+          <div class="chart-card glass"><div class="section-head"><h3>Fees Status</h3></div><div class="chart-wrap"><canvas id="feesChart"></canvas></div></div>
+        </div>
+      </section>
+      <section id="studentSection" class="panel glass">
+        <div class="section-head"><div><h2>Student Records</h2><div class="helper">Search by name, roll, department, class, result, or fee status.</div></div></div>
+        <div class="toolbar">
+          <input class="input" id="excelFile" type="file" accept=".xlsx,.xls,.csv" onchange="importExcel()" />
+          <button class="btn small" onclick="downloadSample()">Sample CSV</button>
+          <button class="btn small green" onclick="exportAllCsv()">All CSV</button>
+          <button class="btn small teal" onclick="exportFilteredCsv()">Filtered CSV</button>
+          <button class="btn small purple" onclick="exportCurrentPdf()">PDF</button>
+          <button class="btn small amber" onclick="window.print()">Print</button>
+          <button class="btn small red" onclick="deleteAllStudents()">Clear All</button>
+        </div>
+        <div class="form-grid">
+          <input class="input" id="studentName" placeholder="Student name" />
+          <input class="input" id="studentRoll" placeholder="Roll number" />
+          <input class="input" id="studentDepartment" placeholder="Department" />
+          <input class="input" id="studentClass" placeholder="Class / Year" />
+          <input class="input" id="studentMarks" type="number" placeholder="Marks" />
+          <button class="btn" onclick="saveStudentFromMain()">Save Student</button>
+        </div>
+        <div class="filter-grid">
+          <input class="input" id="searchInput" oninput="applyFilters()" placeholder="Search name / roll / department / class / result / fee status" />
+          <select class="select" id="departmentFilter" onchange="applyFilters()"><option value="">All Depts</option></select>
+          <select class="select" id="classFilter" onchange="applyFilters()"><option value="">All Classes</option></select>
+          <select class="select" id="resultFilter" onchange="applyFilters()"><option value="">All Results</option><option value="Pass">Pass</option><option value="Fail">Fail</option></select>
+          <select class="select" id="feeFilter" onchange="applyFilters()"><option value="">All Fees</option><option value="Paid">Paid</option><option value="Partial">Partial</option><option value="Unpaid">Unpaid</option></select>
+          <select class="select" id="attendanceFilter" onchange="applyFilters()"><option value="">Attendance</option><option value="Present">Present</option><option value="Absent">Absent</option></select>
+          <select class="select" id="sortFilter" onchange="applyFilters()"><option value="default">Sort</option><option value="nameAZ">Name A-Z</option><option value="marksHigh">Marks High-Low</option><option value="marksLow">Marks Low-High</option><option value="feesHigh">Fees High-Low</option></select>
+        </div>
+        <div class="helper" id="viewInfo" style="margin-bottom:12px">Showing 0 students</div>
+        <div class="table-wrap"><table><thead><tr><th>Photo</th><th>Name</th><th>Roll</th><th>Department</th><th>Class</th><th>Marks</th><th>Result</th><th>Attendance</th><th>Fee Status</th><th>Paid / Total</th><th>Actions</th></tr></thead><tbody id="studentTable"></tbody></table></div>
+      </section>
+      <div class="grid-2">
+        <section id="financeSection" class="panel glass"><div class="section-head"><div><h2>Fee Summary</h2><div class="helper">Track paid, partial, and unpaid fees for each student.</div></div></div><div class="quick-grid"><div class="quick-item"><div class="stat-title">Collected Amount</div><div class="stat-value" id="feesCollectedCard">₹0</div></div><div class="quick-item"><div class="stat-title">Remaining Amount</div><div class="stat-value" id="feesRemainingCard">₹0</div></div><div class="quick-item"><div class="stat-title">Students Fully Paid</div><div class="stat-value" id="feesPaidCount">0</div></div><div class="quick-item"><div class="stat-title">Students Need Follow-up</div><div class="stat-value" id="feesDueCount">0</div></div></div></section>
+        <section id="infoSection" class="panel glass"><div class="section-head"><div><h2>System Info</h2><div class="helper">Backend and database details for your project.</div></div></div><div class="mini-list"><div class="mini-item" id="loggedInfo">Logged in user: -</div><div class="mini-item" id="storageInfo">Saved students: 0</div><div class="mini-item">Backend: <strong>Node.js + Express</strong></div><div class="mini-item">Database: <strong>SQLite (database.sqlite)</strong></div><div class="mini-item">Photo uploads: <strong>public/uploads</strong></div></div></section>
+      </div>
+    </div>
+  </main>
+</section>
+<div id="studentModal" class="modal-cover hidden"><div class="modal glass"><div class="section-head"><h2 id="modalTitle">Add Student</h2><button class="btn small secondary" onclick="closeStudentModal()">Close</button></div><div class="form-grid" style="grid-template-columns:repeat(3,1fr)"><input class="input" id="modalName" placeholder="Student name" /><input class="input" id="modalRoll" placeholder="Roll number" /><input class="input" id="modalDepartment" placeholder="Department" /><input class="input" id="modalClass" placeholder="Class / Year" /><input class="input" id="modalMarks" type="number" placeholder="Marks" /><select class="select" id="modalAttendance"><option>Present</option><option>Absent</option></select><input class="input" id="modalTotalFees" type="number" placeholder="Total fees" /><input class="input" id="modalPaidFees" type="number" placeholder="Paid fees" /><input class="input" id="modalPhone" placeholder="Phone" /><input class="input" id="modalEmail" placeholder="Email" /><input class="input" id="modalAddress" placeholder="Address" /><input class="input" id="modalPhoto" type="file" accept="image/*" /></div><textarea class="textarea" id="modalNotes" placeholder="Notes"></textarea><div class="row" style="margin-top:14px"><button class="btn" onclick="saveStudentFromModal()">Save Student</button><button class="btn secondary" onclick="clearModalForm()">Clear</button></div></div></div>
+<div id="profileModal" class="modal-cover hidden"><div class="modal glass"><div class="section-head"><h2>Student Profile</h2><button class="btn small secondary" onclick="closeProfileModal()">Close</button></div><div id="profileContent"></div></div></div>
+<script>
+const STORAGE_KEYS={logged:'ad_fsms_logged',theme:'ad_fsms_theme',user:'ad_fsms_user'};
+let students=[]; let currentView=[]; let editId=null; let charts={dept:null,marks:null,attendance:null,fees:null};
+const $=id=>document.getElementById(id);
+
+const API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL)
+  ? window.APP_CONFIG.API_BASE_URL.replace(/\/$/, '')
+  : `${window.location.protocol}//${window.location.hostname}:10000`;
+
+async function parseResponse(r){
+  const text = await r.text();
+  let data = {};
+  try { data = text ? JSON.parse(text) : {}; } catch { data = { error: text || 'Unexpected server response' }; }
+  return { ok: r.ok, data };
+}
+
+const api = {
+  get: url => fetch(API_BASE + url).then(parseResponse),
+  post: (url, body, isForm=false) => fetch(API_BASE + url,{method:'POST',headers:isForm?undefined:{'Content-Type':'application/json'},body:isForm?body:JSON.stringify(body)}).then(parseResponse),
+  put: (url, body, isForm=false) => fetch(API_BASE + url,{method:'PUT',headers:isForm?undefined:{'Content-Type':'application/json'},body:isForm?body:JSON.stringify(body)}).then(parseResponse),
+  delete: url => fetch(API_BASE + url,{method:'DELETE'}).then(parseResponse)
+}
+;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.add('hidden'),2500)}
+function formatMoney(n){return '₹'+(Number(n)||0).toLocaleString('en-IN')}
+function initialFromName(name=''){return (name.trim()[0]||'?').toUpperCase()}
+function showSignup(){$('loginBox').classList.add('hidden');$('signupBox').classList.remove('hidden')}
+function showLogin(){$('signupBox').classList.add('hidden');$('loginBox').classList.remove('hidden')}
+function toggleTheme(){document.body.classList.toggle('light');localStorage.setItem(STORAGE_KEYS.theme,document.body.classList.contains('light')?'light':'dark')}
+function scrollToSection(id){$(id).scrollIntoView({behavior:'smooth',block:'start'})}
+function getResult(m){return Number(m)>=40?'Pass':'Fail'}
+function getFeeStatus(total,paid){total=Number(total)||0;paid=Number(paid)||0;if(total===0||paid>=total)return 'Paid';if(paid>0)return 'Partial';return 'Unpaid'}
+function getAcademicStatus(m){m=Number(m)||0;if(m>=90)return {label:'Excellent',cls:'s-active'};if(m>=60)return {label:'Good',cls:'s-pending'};return {label:'Needs Support',cls:'s-inactive'}}
+function saveUser(user){localStorage.setItem(STORAGE_KEYS.user,JSON.stringify(user));localStorage.setItem(STORAGE_KEYS.logged,'true')}
+function getUser(){return JSON.parse(localStorage.getItem(STORAGE_KEYS.user)||'null')}
+function logoutUser(){localStorage.removeItem(STORAGE_KEYS.logged);localStorage.removeItem(STORAGE_KEYS.user);$('dashboardSection').classList.add('hidden');$('authSection').classList.remove('hidden');showLogin()}
+async function signupUser(){const name=$('signupName').value.trim(),email=$('signupEmail').value.trim(),password=$('signupPassword').value.trim(); if(!name||!email||!password)return toast('Fill all admin fields'); const res=await api.post('/api/admin/signup',{name,email,password}); if(!res.ok) return toast(res.data.error||'Signup failed'); toast('Admin account created'); showLogin(); $('loginEmail').value=email; $('loginPassword').value='';}
+async function loginUser(){const email=$('loginEmail').value.trim(),password=$('loginPassword').value.trim(); if(!email||!password)return toast('Enter email and password'); const res=await api.post('/api/admin/login',{email,password}); if(!res.ok)return toast(res.data.error||'Login failed'); saveUser(res.data.user); openDashboard();}
+async function openDashboard(){const user=getUser(); $('authSection').classList.add('hidden'); $('dashboardSection').classList.remove('hidden'); $('welcomeText').textContent='Welcome, '+(user?.name||'Admin')+' 👋'; $('loggedInfo').textContent='Logged in user: '+(user?.name||'Admin')+' ('+(user?.email||'-')+')'; await loadStudents();}
+async function loadStudents(){const res=await api.get('/api/students'); if(!res.ok){toast('Failed to load students'); return;} students=res.data||[]; refreshFilters(); applyFilters(); updateDashboard(); $('storageInfo').textContent='Saved students: '+students.length;}
+function refreshFilters(){const dep=$('departmentFilter'), cls=$('classFilter'); const depValue=dep.value, clsValue=cls.value; dep.innerHTML='<option value="">All Depts</option>'; cls.innerHTML='<option value="">All Classes</option>'; [...new Set(students.map(s=>s.department).filter(Boolean))].sort().forEach(v=>dep.insertAdjacentHTML('beforeend',`<option value="${v}">${v}</option>`)); [...new Set(students.map(s=>s.studentClass).filter(Boolean))].sort().forEach(v=>cls.insertAdjacentHTML('beforeend',`<option value="${v}">${v}</option>`)); dep.value=depValue; cls.value=clsValue; }
+function applyFilters(){const q=$('searchInput').value.trim().toLowerCase(), dep=$('departmentFilter').value, cls=$('classFilter').value, result=$('resultFilter').value, fee=$('feeFilter').value, attendance=$('attendanceFilter').value, sort=$('sortFilter').value; currentView=students.filter(s=>{const hay=[s.name,s.roll,s.department,s.studentClass,s.result,s.feeStatus,s.attendance].join(' ').toLowerCase(); return (!q||hay.includes(q)) && (!dep||s.department===dep) && (!cls||s.studentClass===cls) && (!result||s.result===result) && (!fee||s.feeStatus===fee) && (!attendance||s.attendance===attendance)}); if(sort==='nameAZ') currentView.sort((a,b)=>a.name.localeCompare(b.name)); if(sort==='marksHigh') currentView.sort((a,b)=>(b.marks||0)-(a.marks||0)); if(sort==='marksLow') currentView.sort((a,b)=>(a.marks||0)-(b.marks||0)); if(sort==='feesHigh') currentView.sort((a,b)=>(b.paidFees||0)-(a.paidFees||0)); renderTable(); }
+function renderTable(){const tbody=$('studentTable'); tbody.innerHTML=''; if(!currentView.length){tbody.innerHTML=`<tr><td colspan="11"><div class="empty">No student records found.</div></td></tr>`; $('viewInfo').textContent=`Showing 0 of ${students.length} students`; return;} currentView.forEach(s=>{const st=getAcademicStatus(s.marks); const photo=s.photo?`<div class="avatar"><img src="${s.photo}" alt="${s.name}"></div>`:`<div class="avatar">${initialFromName(s.name)}</div>`; const tr=document.createElement('tr'); tr.innerHTML=`<td>${photo}</td><td>${s.name}</td><td>${s.roll}</td><td>${s.department}</td><td>${s.studentClass}</td><td>${s.marks}</td><td><span class="status ${st.cls}">${s.result}</span></td><td>${s.attendance}</td><td>${s.feeStatus}</td><td>${formatMoney(s.paidFees)} / ${formatMoney(s.totalFees)}</td><td><button class="btn small" onclick="viewProfile(${s.id})">Profile</button> <button class="btn small green" onclick="quickEdit(${s.id})">Edit</button> <button class="btn small red" onclick="deleteStudent(${s.id})">Delete</button></td>`; tbody.appendChild(tr)}); $('viewInfo').textContent=`Showing ${currentView.length} of ${students.length} students`; }
+function clearMainForm(){['studentName','studentRoll','studentDepartment','studentClass','studentMarks'].forEach(id=>$(id).value=''); editId=null;}
+async function saveStudentFromMain(){const name=$('studentName').value.trim(), roll=$('studentRoll').value.trim(), department=$('studentDepartment').value.trim(), studentClass=$('studentClass').value.trim(), marks=$('studentMarks').value.trim(); if(!name||!roll||!department||!studentClass||marks==='') return toast('Fill main student form'); const res=await api.post('/api/students',{name,roll,department,studentClass,marks}); if(!res.ok) return toast(res.data.error||'Save failed'); toast('Student saved'); clearMainForm(); loadStudents();}
+function openStudentModal(id=null){editId=id; $('modalTitle').textContent=id?'Edit Student':'Add Student'; if(id){const s=students.find(x=>x.id===id); if(!s) return; $('modalName').value=s.name; $('modalRoll').value=s.roll; $('modalDepartment').value=s.department; $('modalClass').value=s.studentClass; $('modalMarks').value=s.marks; $('modalAttendance').value=s.attendance; $('modalTotalFees').value=s.totalFees; $('modalPaidFees').value=s.paidFees; $('modalPhone').value=s.phone||''; $('modalEmail').value=s.email||''; $('modalAddress').value=s.address||''; $('modalNotes').value=s.notes||''; $('modalPhoto').value=''; } else clearModalForm(); $('studentModal').classList.remove('hidden');}
+function closeStudentModal(){$('studentModal').classList.add('hidden')}
+function clearModalForm(){['modalName','modalRoll','modalDepartment','modalClass','modalMarks','modalTotalFees','modalPaidFees','modalPhone','modalEmail','modalAddress','modalNotes','modalPhoto'].forEach(id=>$(id).value=''); $('modalAttendance').value='Present';}
+async function saveStudentFromModal(){const required=['modalName','modalRoll','modalDepartment','modalClass','modalMarks']; if(required.some(id=>!$(id).value.trim())) return toast('Fill required fields'); const form=new FormData(); ['Name','Roll','Department','Class','Marks','Attendance','TotalFees','PaidFees','Phone','Email','Address','Notes'].forEach(()=>{}); form.append('name',$('modalName').value); form.append('roll',$('modalRoll').value); form.append('department',$('modalDepartment').value); form.append('studentClass',$('modalClass').value); form.append('marks',$('modalMarks').value); form.append('attendance',$('modalAttendance').value); form.append('totalFees',$('modalTotalFees').value); form.append('paidFees',$('modalPaidFees').value); form.append('phone',$('modalPhone').value); form.append('email',$('modalEmail').value); form.append('address',$('modalAddress').value); form.append('notes',$('modalNotes').value); const file=$('modalPhoto').files[0]; if(file) form.append('photoFile',file); const res= editId ? await api.put('/api/students/'+editId, form, true) : await api.post('/api/students', form, true); if(!res.ok) return toast(res.data.error||'Save failed'); toast(editId?'Student updated':'Student added'); closeStudentModal(); clearModalForm(); editId=null; loadStudents();}
+function quickEdit(id){openStudentModal(id)}
+async function deleteStudent(id){if(!confirm('Delete this student?')) return; const res=await api.delete('/api/students/'+id); if(!res.ok) return toast(res.data.error||'Delete failed'); toast('Student deleted'); loadStudents();}
+async function deleteAllStudents(){if(!students.length) return toast('No student data'); if(!confirm('Clear all student records?')) return; for(const s of [...students]){await api.delete('/api/students/'+s.id)} toast('All records cleared'); loadStudents();}
+function viewProfile(id){const s=students.find(x=>x.id===id); if(!s) return; const avatar=s.photo?`<div class="profile-avatar"><img src="${s.photo}" alt="${s.name}"></div>`:`<div class="profile-avatar">${initialFromName(s.name)}</div>`; $('profileContent').innerHTML=`<div class="profile-head">${avatar}<div><h2>${s.name}</h2><div class="helper">Roll: ${s.roll} • ${s.department} • ${s.studentClass}</div></div></div><div class="profile-grid"><div class="profile-box"><h4>Marks</h4><div>${s.marks}</div></div><div class="profile-box"><h4>Result</h4><div>${s.result}</div></div><div class="profile-box"><h4>Attendance</h4><div>${s.attendance}</div></div><div class="profile-box"><h4>Fee Status</h4><div>${s.feeStatus}</div></div><div class="profile-box"><h4>Paid Fees</h4><div>${formatMoney(s.paidFees)}</div></div><div class="profile-box"><h4>Total Fees</h4><div>${formatMoney(s.totalFees)}</div></div><div class="profile-box"><h4>Phone</h4><div>${s.phone||'-'}</div></div><div class="profile-box"><h4>Email</h4><div>${s.email||'-'}</div></div><div class="profile-box"><h4>Address</h4><div>${s.address||'-'}</div></div></div><div class="profile-box"><h4>Notes</h4><div>${s.notes||'No notes'}</div></div>`; $('profileModal').classList.remove('hidden');}
+function closeProfileModal(){$('profileModal').classList.add('hidden')}
+function normalizeRow(row){const marks=Number(row.Marks||row.marks||row.Score||0)||0; const totalFees=Number(row.TotalFees||row['Total Fees']||row.totalFees||0)||0; const paidFees=Number(row.PaidFees||row['Paid Fees']||row.paidFees||0)||0; return {name:row.Name||row.name||row['Student Name']||'',roll:row.Roll||row.roll||row['Roll No']||row['Roll Number']||'',department:row.Department||row.department||row.Dept||'',studentClass:row.Class||row.class||row.Year||row['Class / Year']||'',marks,attendance:row.Attendance||row.attendance||'Present',totalFees,paidFees,phone:row.Phone||row.phone||'',email:row.Email||row.email||'',address:row.Address||row.address||'',notes:row.Notes||row.notes||''}}
+async function importExcel(){const file=$('excelFile').files[0]; if(!file) return; const reader=new FileReader(); reader.onload=async e=>{const data=new Uint8Array(e.target.result); const workbook=XLSX.read(data,{type:'array'}); const sheet=workbook.Sheets[workbook.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(sheet); const imported=rows.map(normalizeRow).filter(r=>r.name&&r.roll&&r.department&&r.studentClass); if(!imported.length) return toast('Columns not matched'); const res=await api.post('/api/students/bulk',{students:imported}); if(!res.ok) return toast(res.data.error||'Import failed'); toast(res.data.message||'Imported'); $('excelFile').value=''; loadStudents();}; reader.readAsArrayBuffer(file)}
+function csvEscape(v){return '"'+String(v??'').replaceAll('"','""')+'"'}
+function makeCsv(rows){const head=['Name','Roll','Department','Class','Marks','Result','Attendance','TotalFees','PaidFees','FeeStatus','Phone','Email','Address','Notes']; const body=rows.map(s=>[s.name,s.roll,s.department,s.studentClass,s.marks,s.result,s.attendance,s.totalFees,s.paidFees,s.feeStatus,s.phone,s.email,s.address,s.notes].map(csvEscape).join(',')); return [head.join(','),...body].join('\n')}
+function downloadBlob(content,filename,mime='text/csv;charset=utf-8;'){const blob=new Blob([content],{type:mime});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=filename;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(link.href),800)}
+function downloadSample(){const sample=[{name:'Azhagudurai',roll:'101',department:'CSE',studentClass:'III Year',marks:92,result:'Pass',attendance:'Present',totalFees:50000,paidFees:50000,feeStatus:'Paid',phone:'9876543210',email:'student1@example.com',address:'Salem',notes:'Top performer'},{name:'Priya',roll:'102',department:'IT',studentClass:'II Year',marks:76,result:'Pass',attendance:'Present',totalFees:45000,paidFees:20000,feeStatus:'Partial',phone:'9876500000',email:'student2@example.com',address:'Chennai',notes:'Needs fee follow-up'}];downloadBlob(makeCsv(sample),'student-sample.csv')}
+function exportAllCsv(){if(!students.length) return toast('No student data available'); downloadBlob(makeCsv(students),'all-students.csv')}
+function exportFilteredCsv(){if(!currentView.length) return toast('No filtered data available'); downloadBlob(makeCsv(currentView),'filtered-students.csv')}
+function exportCurrentPdf(){if(!currentView.length) return toast('No student data to export'); const jsPDF=window.jspdf?.jsPDF; if(!jsPDF) return toast('PDF library not loaded'); const doc=new jsPDF({orientation:'landscape'}); doc.setFontSize(18); doc.text('AD Full Stack Student Management Report',14,14); doc.setFontSize(11); doc.text('Students: '+currentView.length+' | Generated: '+new Date().toLocaleString(),14,22); const rows=currentView.map(s=>[s.name,s.roll,s.department,s.studentClass,s.marks,s.result,s.attendance,s.feeStatus,formatMoney(s.paidFees)+' / '+formatMoney(s.totalFees)]); doc.autoTable({startY:28,head:[['Name','Roll','Dept','Class','Marks','Result','Attendance','Fee','Paid / Total']],body:rows,styles:{fontSize:9},headStyles:{fillColor:[37,99,235]}}); doc.save('student-report.pdf')}
+async function updateDashboard(){const res=await api.get('/api/dashboard/summary'); if(!res.ok) return; const d=res.data; $('statTotal').textContent=d.total; $('statAvgMarks').textContent=d.avgMarks; $('statAttendance').textContent=d.attendanceRate+'%'; $('statFees').textContent=formatMoney(d.paidFees); $('statPendingFees').textContent=formatMoney(d.pendingFees); $('statPassRate').textContent=d.passRate+'%'; $('feesCollectedCard').textContent=formatMoney(d.paidFees); $('feesRemainingCard').textContent=formatMoney(d.pendingFees); $('feesPaidCount').textContent=students.filter(s=>s.feeStatus==='Paid').length; $('feesDueCount').textContent=students.filter(s=>s.feeStatus!=='Paid').length; renderCharts();}
+function renderCharts(){if(typeof Chart==='undefined') return; const deptCounts={}, marksBuckets={'90+':0,'60-89':0,'0-59':0}, attendance={'Present':0,'Absent':0}, fees={'Paid':0,'Partial':0,'Unpaid':0}; students.forEach(s=>{deptCounts[s.department||'Unknown']=(deptCounts[s.department||'Unknown']||0)+1; if(s.marks>=90) marksBuckets['90+']++; else if(s.marks>=60) marksBuckets['60-89']++; else marksBuckets['0-59']++; attendance[s.attendance]=(attendance[s.attendance]||0)+1; fees[s.feeStatus]=(fees[s.feeStatus]||0)+1;}); drawChart('deptChart','bar',Object.keys(deptCounts),Object.values(deptCounts),'Students by Department','dept'); drawChart('marksChart','doughnut',Object.keys(marksBuckets),Object.values(marksBuckets),'Marks Performance','marks'); drawChart('attendanceChart','pie',Object.keys(attendance),Object.values(attendance),'Attendance Rate','attendance'); drawChart('feesChart','bar',Object.keys(fees),Object.values(fees),'Fee Status','fees')}
+function drawChart(id,type,labels,data,label,key){const el=$(id); if(charts[key]) charts[key].destroy(); charts[key]=new Chart(el,{type,data:{labels,datasets:[{label,data,borderWidth:1,borderRadius:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:type==='bar'?{y:{beginAtZero:true,ticks:{precision:0}}}:{}}})}
+(function init(){if(localStorage.getItem(STORAGE_KEYS.theme)==='light') document.body.classList.add('light'); if(localStorage.getItem(STORAGE_KEYS.logged)==='true' && getUser()) openDashboard()})();
+</script>
+</body>
+</html>
